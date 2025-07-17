@@ -59,12 +59,30 @@ const ParkingDetail = ({ id }: ParkingDetailProps) => {
             </div>
             <div
                 ref={containerRef}
-                className="relative w-full h-screen overflow-hidden cursor-grab active:cursor-grabbing"
+                className="relative w-full h-screen overflow-hidden touch-none cursor-grab active:cursor-grabbing"
                 onMouseDown={handleMouseDown}
                 onMouseMove={handleMouseMove}
                 onMouseUp={handleMouseUp}
                 onMouseLeave={handleMouseUp}
+                onTouchStart={(e) => {
+                    const touch = e.touches[0];
+                    setIsDragging(true);
+                    setStartPos({
+                        x: touch.clientX - translate.x,
+                        y: touch.clientY - translate.y,
+                    });
+                }}
+                onTouchMove={(e) => {
+                    if (!isDragging) return;
+                    const touch = e.touches[0];
+                    setTranslate({
+                        x: touch.clientX - startPos.x,
+                        y: touch.clientY - startPos.y,
+                    });
+                }}
+                onTouchEnd={() => setIsDragging(false)}
             >
+
                 <div
                     className="transition-transform duration-100 ease-in-out"
                     style={{
@@ -72,7 +90,7 @@ const ParkingDetail = ({ id }: ParkingDetailProps) => {
                     }}
                 >
 
-                    <h1 className='ml-7 flex items-center gap-1 text-sm'>Entrance <ArrowRight className='w-3 h-3 '/></h1>
+                    <h1 className='ml-7 flex items-center gap-1 text-sm'>Entrance <ArrowRight className='w-3 h-3 ' /></h1>
                     <div className="flex flex-col items-center gap-2 p-6">
 
                         <div className='flex flex-col items-center gap-10'>

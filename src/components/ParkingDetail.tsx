@@ -4,51 +4,18 @@ import { ArrowLeft, ArrowRight } from 'lucide-react'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import React, { useEffect, useRef, useState } from 'react'
+import { TransformWrapper, TransformComponent } from 'react-zoom-pan-pinch';
+import ZoomableCanvas from './ZoomableCanvas'
 
 interface ParkingDetailProps {
     id: number
 }
 
-const ParkingDetail = ({ id }: ParkingDetailProps) => {
-
-    const containerRef = useRef<HTMLDivElement>(null);
-    const [isDragging, setIsDragging] = useState(false);
-    const [startPos, setStartPos] = useState({ x: 0, y: 0 });
-    const [translate, setTranslate] = useState({ x: -15, y: 20 });
-    const [scale, setScale] = useState(1);
+export default function ParkingDetail({ id }: ParkingDetailProps) {
     const router = useRouter();
-
-    useEffect(() => {
-        const container = containerRef.current;
-        const handleWheel = (e: WheelEvent) => {
-            e.preventDefault();
-            const delta = -e.deltaY * 0.001;
-            setScale((prev) => Math.min(Math.max(prev + delta, 0.5), 2));
-        };
-
-        container?.addEventListener('wheel', handleWheel, { passive: false });
-        return () => {
-            container?.removeEventListener('wheel', handleWheel);
-        };
-    }, []);
-
-    const handleMouseDown = (e: React.MouseEvent) => {
-        setIsDragging(true);
-        setStartPos({ x: e.clientX - translate.x, y: e.clientY - translate.y });
-    };
-
-    const handleMouseMove = (e: React.MouseEvent) => {
-        if (!isDragging) return;
-        setTranslate({ x: e.clientX - startPos.x, y: e.clientY - startPos.y });
-    };
-
-    const handleMouseUp = () => {
-        setIsDragging(false);
-    };
-
     return (
-        <section>
-            <div className="flex items-center justify-between">
+        <section className="relative w-full min-h-screen overflow-auto touch-none">
+            <div className="flex items-center justify-between mb-7">
                 <ArrowLeft
                     onClick={() => {
                         router.back();
@@ -57,40 +24,15 @@ const ParkingDetail = ({ id }: ParkingDetailProps) => {
                 <h1 className='font-bold'>{places.find(item => item.id == id)?.name}</h1>
                 <div className='w-5'></div>
             </div>
-            <div
-                ref={containerRef}
-                className="relative w-full h-screen overflow-hidden touch-none cursor-grab active:cursor-grabbing"
-                onMouseDown={handleMouseDown}
-                onMouseMove={handleMouseMove}
-                onMouseUp={handleMouseUp}
-                onMouseLeave={handleMouseUp}
-                onTouchStart={(e) => {
-                    const touch = e.touches[0];
-                    setIsDragging(true);
-                    setStartPos({
-                        x: touch.clientX - translate.x,
-                        y: touch.clientY - translate.y,
-                    });
-                }}
-                onTouchMove={(e) => {
-                    if (!isDragging) return;
-                    const touch = e.touches[0];
-                    setTranslate({
-                        x: touch.clientX - startPos.x,
-                        y: touch.clientY - startPos.y,
-                    });
-                }}
-                onTouchEnd={() => setIsDragging(false)}
+            <TransformWrapper
+                centerOnInit={false}
+                limitToBounds={false}
+                panning={{ disabled: false }}
+                pinch={{ disabled: false }}
+                doubleClick={{ disabled: true }}
             >
-
-                <div
-                    className="transition-transform duration-100 ease-in-out"
-                    style={{
-                        transform: `translate(${translate.x}px, ${translate.y}px) scale(${scale})`,
-                    }}
-                >
-
-                    <h1 className='ml-7 flex items-center gap-1 text-sm'>Entrance <ArrowRight className='w-3 h-3 ' /></h1>
+                <TransformComponent>
+                    <h1 className='ml-5 flex items-center gap-1 text-sm'>Entrance <ArrowRight className='w-3 h-3 ' /></h1>
                     <div className="flex flex-col items-center gap-2 p-6">
 
                         <div className='flex flex-col items-center gap-10'>
@@ -224,11 +166,8 @@ const ParkingDetail = ({ id }: ParkingDetailProps) => {
                             </div>
                         </div>
                     </div>
-                </div>
-
-            </div>
+                </TransformComponent>
+            </TransformWrapper>
         </section>
-    )
+    );
 }
-
-export default ParkingDetail

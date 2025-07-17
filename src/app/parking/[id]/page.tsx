@@ -1,17 +1,15 @@
 import ParkingDetail from "@/components/ParkingDetail";
-import { places } from "@/constants";
-import { ArrowLeft } from "lucide-react";
+interface PageProps {
+  params: { id: string }; // Always string from Next.js
+}
 
+export default async function page(props: { params: Promise<{ id: string }> }) {
 
-export default function page({ params }: { params: { id: number } }) {
-
-  let { id } = params;
+  const { id } = await props.params;
 
   return (
     <section>
-      {id && (
-        <ParkingDetail id={id} />
-      )}
+      <ParkingDetail id={Number(id)} />
     </section>
   )
 }

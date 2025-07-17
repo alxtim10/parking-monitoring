@@ -1,5 +1,7 @@
 'use client'
 import { places } from "@/constants"
+import { ArrowRight } from "lucide-react";
+import Image from "next/image";
 import { useRouter } from "next/navigation"
 
 
@@ -16,11 +18,15 @@ const Places = () => {
                 router.push(`/parking/${item.id}`)
               }}
               key={index} className="border w-full rounded-2xl shadow-md p-2 cursor-pointer">
-              <div className="h-36 w-full bg-blue-200 rounded-xl">
+              <div className="relative rounded-xl h-44">
+                <Image src={'/pim.jpg'} fill objectFit="cover" alt="asd" className="rounded-xl" />
               </div>
               <div className="mt-3 py-2 px-1">
                 <h1 className="font-bold">{item.name}</h1>
-                <h1 className="text-sm">{item.location}</h1>
+                <div className="flex items-center justify-between">
+                  <h1 className="text-sm">{item.location}</h1>
+                  <ArrowRight className="w-4 h-4" />
+                </div>
               </div>
             </div>
           )

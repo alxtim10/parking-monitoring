@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation'
 import React, { useEffect, useRef, useState } from 'react'
 import { TransformWrapper, TransformComponent } from 'react-zoom-pan-pinch';
 import ZoomableCanvas from './ZoomableCanvas'
+import { io } from 'socket.io-client'
 
 interface ParkingDetailProps {
     id: number
@@ -13,6 +14,33 @@ interface ParkingDetailProps {
 
 export default function ParkingDetail({ id }: ParkingDetailProps) {
     const router = useRouter();
+
+    const ws = useRef<WebSocket | null>(null);
+    // useEffect(() => {
+    //     ws.current = new WebSocket('wss://valet-production.up.railway.app/api/test');
+
+    //     ws.current.onopen = () => {
+    //         console.log('WebSocket connected');
+    //         ws.current?.send('Waiting for parking slot update..'); // send a message
+    //     };
+
+    //     ws.current.onmessage = (event) => {
+    //         console.log('Message from server:', event.data);
+    //     };
+
+    //     ws.current.onclose = () => {
+    //         console.log('WebSocket disconnected');
+    //     };
+
+    //     ws.current.onerror = (error) => {
+    //         console.error('WebSocket error:', error);
+    //     };
+
+    //     return () => {
+    //         ws.current?.close();
+    //     };
+    // }, []);
+
     return (
         <section className="relative w-full min-h-screen overflow-auto touch-none">
             <div className="flex items-center justify-between p-5">
@@ -33,7 +61,7 @@ export default function ParkingDetail({ id }: ParkingDetailProps) {
                 doubleClick={{ disabled: true }}
             >
                 <TransformComponent>
-                    <h1 className='ml-5 flex items-center gap-1 text-sm'>Entrance <ArrowRight className='w-3 h-3 ' /></h1>
+                    <h1 className='mb-5 flex items-center gap-1 text-sm'>Entrance <ArrowRight className='w-3 h-3 ' /></h1>
                     <div className="flex flex-col items-center gap-2">
 
                         <div className='flex flex-col items-center gap-10'>

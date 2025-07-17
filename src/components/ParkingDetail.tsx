@@ -15,7 +15,7 @@ export default function ParkingDetail({ id }: ParkingDetailProps) {
     const router = useRouter();
     return (
         <section className="relative w-full min-h-screen overflow-auto touch-none">
-            <div className="flex items-center justify-between mb-7">
+            <div className="flex items-center justify-between p-5">
                 <ArrowLeft
                     onClick={() => {
                         router.back();
@@ -25,6 +25,7 @@ export default function ParkingDetail({ id }: ParkingDetailProps) {
                 <div className='w-5'></div>
             </div>
             <TransformWrapper
+                minScale={0}
                 centerOnInit={false}
                 limitToBounds={false}
                 panning={{ disabled: false }}
@@ -33,7 +34,7 @@ export default function ParkingDetail({ id }: ParkingDetailProps) {
             >
                 <TransformComponent>
                     <h1 className='ml-5 flex items-center gap-1 text-sm'>Entrance <ArrowRight className='w-3 h-3 ' /></h1>
-                    <div className="flex flex-col items-center gap-2 p-6">
+                    <div className="flex flex-col items-center gap-2">
 
                         <div className='flex flex-col items-center gap-10'>
                             {/* Top Row (reverse to face bottom row) */}

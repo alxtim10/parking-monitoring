@@ -10,23 +10,23 @@ const Places = () => {
 
   const router = useRouter();
   const [data, setData] = useState();
-  const GetPlace = useCallback(async () => {
-    const response = await fetch(`https://valet-production.up.railway.app/api/place/getbyid`, {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer eyJhbGciOiJIUzI1NiIsImtpZCI6ImlWVVpGNXhJSDNIWFE1QzAiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL25ra3F3Zmp4dGNrcGx3cm1paXlnLnN1cGFiYXNlLmNvL2F1dGgvdjEiLCJzdWIiOiJiZjkyYzZhYi1iMzEwLTQ0NWMtOTI2MS1iNDVjYmZkMzgxYzQiLCJhdWQiOiJhdXRoZW50aWNhdGVkIiwiZXhwIjoxNzUyODM4ODIxLCJpYXQiOjE3NTI4MzUyMjEsImVtYWlsIjoiaW1hbTA3bkBnbWFpbC5jb20iLCJwaG9uZSI6IiIsImFwcF9tZXRhZGF0YSI6eyJwcm92aWRlciI6ImVtYWlsIiwicHJvdmlkZXJzIjpbImVtYWlsIl19LCJ1c2VyX21ldGFkYXRhIjp7ImVtYWlsIjoiaW1hbTA3bkBnbWFpbC5jb20iLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwicGhvbmVfdmVyaWZpZWQiOmZhbHNlLCJzdWIiOiJiZjkyYzZhYi1iMzEwLTQ0NWMtOTI2MS1iNDVjYmZkMzgxYzQifSwicm9sZSI6ImF1dGhlbnRpY2F0ZWQiLCJhYWwiOiJhYWwxIiwiYW1yIjpbeyJtZXRob2QiOiJwYXNzd29yZCIsInRpbWVzdGFtcCI6MTc1MjgzNTIyMX1dLCJzZXNzaW9uX2lkIjoiMTZkYWJmMmMtNGQwMy00YTcwLWI2MjAtMmMxOTNlZWYxN2VjIiwiaXNfYW5vbnltb3VzIjpmYWxzZX0.4VUzf1C55ETN6bcMCJLQAehtvtjroadb-Rzn4dG1vdw`,
-        'Content-Type': 'application/json',
-      },
-    }
-    );
+  // const GetPlace = useCallback(async () => {
+  //   const response = await fetch(`https://valet-production.up.railway.app/api/place/getbyid`, {
+  //     method: 'POST',
+  //     headers: {
+  //       Authorization: `Bearer eyJhbGciOiJIUzI1NiIsImtpZCI6ImlWVVpGNXhJSDNIWFE1QzAiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL25ra3F3Zmp4dGNrcGx3cm1paXlnLnN1cGFiYXNlLmNvL2F1dGgvdjEiLCJzdWIiOiJiZjkyYzZhYi1iMzEwLTQ0NWMtOTI2MS1iNDVjYmZkMzgxYzQiLCJhdWQiOiJhdXRoZW50aWNhdGVkIiwiZXhwIjoxNzUyODM4ODIxLCJpYXQiOjE3NTI4MzUyMjEsImVtYWlsIjoiaW1hbTA3bkBnbWFpbC5jb20iLCJwaG9uZSI6IiIsImFwcF9tZXRhZGF0YSI6eyJwcm92aWRlciI6ImVtYWlsIiwicHJvdmlkZXJzIjpbImVtYWlsIl19LCJ1c2VyX21ldGFkYXRhIjp7ImVtYWlsIjoiaW1hbTA3bkBnbWFpbC5jb20iLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwicGhvbmVfdmVyaWZpZWQiOmZhbHNlLCJzdWIiOiJiZjkyYzZhYi1iMzEwLTQ0NWMtOTI2MS1iNDVjYmZkMzgxYzQifSwicm9sZSI6ImF1dGhlbnRpY2F0ZWQiLCJhYWwiOiJhYWwxIiwiYW1yIjpbeyJtZXRob2QiOiJwYXNzd29yZCIsInRpbWVzdGFtcCI6MTc1MjgzNTIyMX1dLCJzZXNzaW9uX2lkIjoiMTZkYWJmMmMtNGQwMy00YTcwLWI2MjAtMmMxOTNlZWYxN2VjIiwiaXNfYW5vbnltb3VzIjpmYWxzZX0.4VUzf1C55ETN6bcMCJLQAehtvtjroadb-Rzn4dG1vdw`,
+  //       'Content-Type': 'application/json',
+  //     },
+  //   }
+  //   );
 
-    const data = await response.json();
-    console.log(data);
-  }, [])
+  //   const data = await response.json();
+  //   console.log(data);
+  // }, [])
 
-  useEffect(() => {
-    GetPlace();
-  }, [GetPlace])
+  // useEffect(() => {
+  //   GetPlace();
+  // }, [GetPlace])
 
   return (
     <section className='mt-5'>

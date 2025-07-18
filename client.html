@@ -47,7 +47,7 @@
   <body>
     <script>
       // ✅ Tambahkan clientId di sini
-      const clientIds = ["A1", "A2", "A4", "user1", "user2", "7cb81015-c630-4094-977d-f0392069ce14ss"];
+      const clientIds = ["A1", "A2", "A4", "user1", "user2", "User3"];
 
       clientIds.forEach(clientId => {
         createChatWindow(clientId);
@@ -77,8 +77,8 @@
 
         // Ganti sesuai server lo brooo 👇
         // const ws = new WebSocket(`ws://localhost:3000?clientId=${clientId}`);
-        const ws = new WebSocket(`wss://valet-production.up.railway.app?clientId=A2`);
-
+        const ws = new WebSocket(`wss://valet-production.up.railway.app?clientId=${clientId}`);
+        console.log(ws);
         ws.onopen = () => appendMessage("✅ Connected", "server");
 
         ws.onmessage = (e) => appendMessage(e.data, "server");

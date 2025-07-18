@@ -1,0 +1,96 @@
+curl --location 'http://localhost:3000/api/auth/signup' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+    "email" : "Imam07n@gmail.com",
+    "password" : "imam123@@"
+}'
+
+curl --location 'http://localhost:3000/api/auth/signin' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+    "email" : "Imam07n@gmail.com",
+    "password" : "imam123@@"
+}'
+
+curl --location 'http://localhost:3000/api/place/create' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsImtpZCI6ImlWVVpGNXhJSDNIWFE1QzAiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL25ra3F3Zmp4dGNrcGx3cm1paXlnLnN1cGFiYXNlLmNvL2F1dGgvdjEiLCJzdWIiOiJiZjkyYzZhYi1iMzEwLTQ0NWMtOTI2MS1iNDVjYmZkMzgxYzQiLCJhdWQiOiJhdXRoZW50aWNhdGVkIiwiZXhwIjoxNzUxOTcxMzQ4LCJpYXQiOjE3NTE5Njc3NDgsImVtYWlsIjoiaW1hbTA3bkBnbWFpbC5jb20iLCJwaG9uZSI6IiIsImFwcF9tZXRhZGF0YSI6eyJwcm92aWRlciI6ImVtYWlsIiwicHJvdmlkZXJzIjpbImVtYWlsIl19LCJ1c2VyX21ldGFkYXRhIjp7ImVtYWlsIjoiaW1hbTA3bkBnbWFpbC5jb20iLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwicGhvbmVfdmVyaWZpZWQiOmZhbHNlLCJzdWIiOiJiZjkyYzZhYi1iMzEwLTQ0NWMtOTI2MS1iNDVjYmZkMzgxYzQifSwicm9sZSI6ImF1dGhlbnRpY2F0ZWQiLCJhYWwiOiJhYWwxIiwiYW1yIjpbeyJtZXRob2QiOiJwYXNzd29yZCIsInRpbWVzdGFtcCI6MTc1MTk2Nzc0OH1dLCJzZXNzaW9uX2lkIjoiNTYyODdlMWMtMzhiMy00YmFiLWI3YjMtMmQyZmVkOTNiYTNhIiwiaXNfYW5vbnltb3VzIjpmYWxzZX0.tHk-pyZmBg2DSZ9SAKmTnUdQrnEzTeoyTQtfONRQqIs' \
+--data '{
+  "name": "Grand Indonesia 2",
+  "type": "mall",
+  "description": "Pusat perbelanjaan di Jakarta Pusat",
+  "address": "Jl. M.H. Thamrin No.1",
+  "city": "Jakarta",
+  "province": "DKI Jakarta",
+  "country": "Indonesia",
+  "latitude": -6.195123,
+  "longitude": 106.822456,
+  "created_by": "auth0|user-id-123", 
+  "updated_by": "auth0|user-id-123"
+}
+'
+
+curl --location 'http://localhost:3000/api/place/getbyid' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsImtpZCI6ImlWVVpGNXhJSDNIWFE1QzAiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL25ra3F3Zmp4dGNrcGx3cm1paXlnLnN1cGFiYXNlLmNvL2F1dGgvdjEiLCJzdWIiOiJiZjkyYzZhYi1iMzEwLTQ0NWMtOTI2MS1iNDVjYmZkMzgxYzQiLCJhdWQiOiJhdXRoZW50aWNhdGVkIiwiZXhwIjoxNzUxOTc2MDI0LCJpYXQiOjE3NTE5NzI0MjQsImVtYWlsIjoiaW1hbTA3bkBnbWFpbC5jb20iLCJwaG9uZSI6IiIsImFwcF9tZXRhZGF0YSI6eyJwcm92aWRlciI6ImVtYWlsIiwicHJvdmlkZXJzIjpbImVtYWlsIl19LCJ1c2VyX21ldGFkYXRhIjp7ImVtYWlsIjoiaW1hbTA3bkBnbWFpbC5jb20iLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwicGhvbmVfdmVyaWZpZWQiOmZhbHNlLCJzdWIiOiJiZjkyYzZhYi1iMzEwLTQ0NWMtOTI2MS1iNDVjYmZkMzgxYzQifSwicm9sZSI6ImF1dGhlbnRpY2F0ZWQiLCJhYWwiOiJhYWwxIiwiYW1yIjpbeyJtZXRob2QiOiJwYXNzd29yZCIsInRpbWVzdGFtcCI6MTc1MTk3MjQyNH1dLCJzZXNzaW9uX2lkIjoiNjFkNzU3OWYtZjc0Zi00MmFiLWJiMGEtOWI2NGRiOGYxZTVjIiwiaXNfYW5vbnltb3VzIjpmYWxzZX0.PCLvnDkJcLPsRHZ0FonMSvBz30FtRlaWC7jiRwBDsG8' \
+--data '{
+  "id": "ab34f0ab-21f9-40e2-8ef0-ddd4f40ce882"
+}
+'
+
+curl --location 'http://localhost:3000/api/place/floor/create' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsImtpZCI6ImlWVVpGNXhJSDNIWFE1QzAiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL25ra3F3Zmp4dGNrcGx3cm1paXlnLnN1cGFiYXNlLmNvL2F1dGgvdjEiLCJzdWIiOiJiZjkyYzZhYi1iMzEwLTQ0NWMtOTI2MS1iNDVjYmZkMzgxYzQiLCJhdWQiOiJhdXRoZW50aWNhdGVkIiwiZXhwIjoxNzUxOTc2MDI0LCJpYXQiOjE3NTE5NzI0MjQsImVtYWlsIjoiaW1hbTA3bkBnbWFpbC5jb20iLCJwaG9uZSI6IiIsImFwcF9tZXRhZGF0YSI6eyJwcm92aWRlciI6ImVtYWlsIiwicHJvdmlkZXJzIjpbImVtYWlsIl19LCJ1c2VyX21ldGFkYXRhIjp7ImVtYWlsIjoiaW1hbTA3bkBnbWFpbC5jb20iLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwicGhvbmVfdmVyaWZpZWQiOmZhbHNlLCJzdWIiOiJiZjkyYzZhYi1iMzEwLTQ0NWMtOTI2MS1iNDVjYmZkMzgxYzQifSwicm9sZSI6ImF1dGhlbnRpY2F0ZWQiLCJhYWwiOiJhYWwxIiwiYW1yIjpbeyJtZXRob2QiOiJwYXNzd29yZCIsInRpbWVzdGFtcCI6MTc1MTk3MjQyNH1dLCJzZXNzaW9uX2lkIjoiNjFkNzU3OWYtZjc0Zi00MmFiLWJiMGEtOWI2NGRiOGYxZTVjIiwiaXNfYW5vbnltb3VzIjpmYWxzZX0.PCLvnDkJcLPsRHZ0FonMSvBz30FtRlaWC7jiRwBDsG8' \
+--data '[
+    {
+        "place_id": "ab34f0ab-21f9-40e2-8ef0-ddd4f40ce882",
+        "floor_name": "Lantai 2",
+        "floor_number": 2,
+        "description": "Area 2"
+    },
+    {
+        "place_id": "ab34f0ab-21f9-40e2-8ef0-ddd4f40ce882",
+        "floor_name": "Lantai 3",
+        "floor_number": 3,
+        "description": "Area 3"
+    }
+]'
+
+curl --location 'http://localhost:3000/api/place/slot/create' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsImtpZCI6ImlWVVpGNXhJSDNIWFE1QzAiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL25ra3F3Zmp4dGNrcGx3cm1paXlnLnN1cGFiYXNlLmNvL2F1dGgvdjEiLCJzdWIiOiJiZjkyYzZhYi1iMzEwLTQ0NWMtOTI2MS1iNDVjYmZkMzgxYzQiLCJhdWQiOiJhdXRoZW50aWNhdGVkIiwiZXhwIjoxNzUxOTc2MDI0LCJpYXQiOjE3NTE5NzI0MjQsImVtYWlsIjoiaW1hbTA3bkBnbWFpbC5jb20iLCJwaG9uZSI6IiIsImFwcF9tZXRhZGF0YSI6eyJwcm92aWRlciI6ImVtYWlsIiwicHJvdmlkZXJzIjpbImVtYWlsIl19LCJ1c2VyX21ldGFkYXRhIjp7ImVtYWlsIjoiaW1hbTA3bkBnbWFpbC5jb20iLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwicGhvbmVfdmVyaWZpZWQiOmZhbHNlLCJzdWIiOiJiZjkyYzZhYi1iMzEwLTQ0NWMtOTI2MS1iNDVjYmZkMzgxYzQifSwicm9sZSI6ImF1dGhlbnRpY2F0ZWQiLCJhYWwiOiJhYWwxIiwiYW1yIjpbeyJtZXRob2QiOiJwYXNzd29yZCIsInRpbWVzdGFtcCI6MTc1MTk3MjQyNH1dLCJzZXNzaW9uX2lkIjoiNjFkNzU3OWYtZjc0Zi00MmFiLWJiMGEtOWI2NGRiOGYxZTVjIiwiaXNfYW5vbnltb3VzIjpmYWxzZX0.PCLvnDkJcLPsRHZ0FonMSvBz30FtRlaWC7jiRwBDsG8' \
+--data '[
+    {
+        "floor_id": "6cf0674c-441f-4487-85be-9420e30f9de6",
+        "slot_code": "A1",
+        "slot_type": "Mobil",
+        "description": "Area 2"
+    },
+    {
+        "floor_id": "6cf0674c-441f-4487-85be-9420e30f9de6",
+        "slot_code": "A2",
+        "slot_type": "Mobil",
+        "description": "Area 2"
+    },
+    {
+        "floor_id": "6cf0674c-441f-4487-85be-9420e30f9de6",
+        "slot_code": "A3",
+        "slot_type": "Mobil",
+        "description": "Area 2"
+    }
+]'
+
+curl --location 'http://localhost:3000/api/place/floor/getbyid' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsImtpZCI6ImlWVVpGNXhJSDNIWFE1QzAiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL25ra3F3Zmp4dGNrcGx3cm1paXlnLnN1cGFiYXNlLmNvL2F1dGgvdjEiLCJzdWIiOiJiZjkyYzZhYi1iMzEwLTQ0NWMtOTI2MS1iNDVjYmZkMzgxYzQiLCJhdWQiOiJhdXRoZW50aWNhdGVkIiwiZXhwIjoxNzUxOTc2MDI0LCJpYXQiOjE3NTE5NzI0MjQsImVtYWlsIjoiaW1hbTA3bkBnbWFpbC5jb20iLCJwaG9uZSI6IiIsImFwcF9tZXRhZGF0YSI6eyJwcm92aWRlciI6ImVtYWlsIiwicHJvdmlkZXJzIjpbImVtYWlsIl19LCJ1c2VyX21ldGFkYXRhIjp7ImVtYWlsIjoiaW1hbTA3bkBnbWFpbC5jb20iLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwicGhvbmVfdmVyaWZpZWQiOmZhbHNlLCJzdWIiOiJiZjkyYzZhYi1iMzEwLTQ0NWMtOTI2MS1iNDVjYmZkMzgxYzQifSwicm9sZSI6ImF1dGhlbnRpY2F0ZWQiLCJhYWwiOiJhYWwxIiwiYW1yIjpbeyJtZXRob2QiOiJwYXNzd29yZCIsInRpbWVzdGFtcCI6MTc1MTk3MjQyNH1dLCJzZXNzaW9uX2lkIjoiNjFkNzU3OWYtZjc0Zi00MmFiLWJiMGEtOWI2NGRiOGYxZTVjIiwiaXNfYW5vbnltb3VzIjpmYWxzZX0.PCLvnDkJcLPsRHZ0FonMSvBz30FtRlaWC7jiRwBDsG8' \
+--data '{
+  "id": "25e8545d-240a-4f5f-9742-c5466d5f737a"
+}
+'
+
+curl --location 'https://valet-production.up.railway.app/command/command' \
+--header 'Content-Type: application/json' \
+--data '{
+    "command": "open_gate",
+    "clientId": "A1"
+  }'

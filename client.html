@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Multi Chat</title>
+    <style>
+      body {
+        font-family: sans-serif;
+        padding: 20px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px;
+      }
+      .chat-wrapper {
+        border: 1px solid #ccc;
+        padding: 10px;
+        width: 300px;
+        background: #f9f9f9;
+        flex: 1;
+      }
+      .chat-box {
+        border: 1px solid #ccc;
+        height: 200px;
+        overflow-y: auto;
+        padding: 5px;
+        margin-bottom: 10px;
+        background: #fff;
+      }
+      .me {
+        text-align: right;
+        color: blue;
+      }
+      .server {
+        text-align: left;
+        color: green;
+      }
+      input, button {
+        padding: 6px;
+        font-size: 14px;
+        width: calc(100% - 70px);
+      }
+      button {
+        width: 60px;
+      }
+    </style>
+  </head>
+  <body>
+    <script>
+      // ✅ Tambahkan clientId di sini
+      const clientIds = ["A1", "A2", "A4", "user1", "user2", "7cb81015-c630-4094-977d-f0392069ce14ss"];
+
+      clientIds.forEach(clientId => {
+        createChatWindow(clientId);
+      });
+
+      function createChatWindow(clientId) {
+        const container = document.createElement("div");
+        container.className = "chat-wrapper";
+
+        const title = document.createElement("h3");
+        title.innerText = `🟢 Client ${clientId}`;
+        container.appendChild(title);
+
+        const chatBox = document.createElement("div");
+        chatBox.className = "chat-box";
+        container.appendChild(chatBox);
+
+        const input = document.createElement("input");
+        input.placeholder = `Send as ${clientId}`;
+        container.appendChild(input);
+
+        const button = document.createElement("button");
+        button.innerText = "Send";
+        container.appendChild(button);
+
+        document.body.appendChild(container);
+
+        // Ganti sesuai server lo brooo 👇
+        // const ws = new WebSocket(`ws://localhost:3000?clientId=${clientId}`);
+        const ws = new WebSocket(`wss://valet-production.up.railway.app?clientId=A2`);
+
+        ws.onopen = () => appendMessage("✅ Connected", "server");
+
+        ws.onmessage = (e) => appendMessage(e.data, "server");
+
+        button.onclick = () => {
+          const message = input.value;
+          if (!message) return;
+
+          // Support broadcast via /b Hello all!
+          if (message.startsWith("/b ")) {
+            ws.send(JSON.stringify({
+              type: "broadcast",
+              message: message.slice(3)
+            }));
+          } else {
+            ws.send(message);
+          }
+
+          appendMessage(message, "me");
+          input.value = "";
+        };
+
+        function appendMessage(text, who) {
+          const msg = document.createElement("div");
+          msg.className = who;
+          msg.innerText = text;
+          chatBox.appendChild(msg);
+          chatBox.scrollTop = chatBox.scrollHeight;
+        }
+      }
+    </script>
+  </body>
+</html>

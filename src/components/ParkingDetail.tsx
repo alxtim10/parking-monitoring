@@ -3,10 +3,8 @@ import { parking_plan, places } from '@/constants'
 import { ArrowLeft, ArrowRight } from 'lucide-react'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { TransformWrapper, TransformComponent } from 'react-zoom-pan-pinch';
-import ZoomableCanvas from './ZoomableCanvas'
-import { io } from 'socket.io-client'
 
 interface ParkingDetailProps {
     id: number
@@ -14,32 +12,74 @@ interface ParkingDetailProps {
 
 export default function ParkingDetail({ id }: ParkingDetailProps) {
     const router = useRouter();
-
+    const [data, setData] = useState<any[]>([]);
     const ws = useRef<WebSocket | null>(null);
-    // useEffect(() => {
-    //     ws.current = new WebSocket('wss://valet-production.up.railway.app/api/test');
+    useEffect(() => {
+        let message = {
+            text: "Waiting for parking slot update.."
+        }
+        ws.current = new WebSocket('wss://valet-production.up.railway.app?clientId=7cb81015-c630-4094-977d-f0392069ce14');
 
-    //     ws.current.onopen = () => {
-    //         console.log('WebSocket connected');
-    //         ws.current?.send('Waiting for parking slot update..'); // send a message
-    //     };
+        ws.current.onopen = () => {
+            console.log('WebSocket connected');
+            ws.current?.send(JSON.stringify(message));
+        };
 
-    //     ws.current.onmessage = (event) => {
-    //         console.log('Message from server:', event.data);
-    //     };
+        ws.current.onmessage = (event) => {
+            try {
+                const parsed = JSON.parse(event.data);
 
-    //     ws.current.onclose = () => {
-    //         console.log('WebSocket disconnected');
-    //     };
+                if (parsed) {
+                    let ads = JSON.parse(event.data);
+                    setData(prev =>
+                        prev.map(slot => {
+                            const found = ads.data.find((update: any) => update.slot_code === slot.slot_code);
+                            if (found) {
+                                return { ...slot, available: found.available };
+                            }
+                            return slot;
+                        })
+                    );
+                }
+            } catch (error) {
+                console.warn('Non-JSON message received:', message);
+                return;
+            }
+        };
 
-    //     ws.current.onerror = (error) => {
-    //         console.error('WebSocket error:', error);
-    //     };
+        ws.current.onclose = () => {
+            console.log('WebSocket disconnected');
+        };
 
-    //     return () => {
-    //         ws.current?.close();
-    //     };
-    // }, []);
+        ws.current.onerror = (error) => {
+            console.error('WebSocket error:', error);
+        };
+
+        return () => {
+            ws.current?.close();
+        };
+    }, []);
+
+    const GetPlace = useCallback(async () => {
+        const response = await fetch(`https://valet-production.up.railway.app/api/place/floor/getbyid`, {
+            method: 'POST',
+            headers: {
+                Authorization: `Bearer eyJhbGciOiJIUzI1NiIsImtpZCI6ImlWVVpGNXhJSDNIWFE1QzAiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL25ra3F3Zmp4dGNrcGx3cm1paXlnLnN1cGFiYXNlLmNvL2F1dGgvdjEiLCJzdWIiOiJiZjkyYzZhYi1iMzEwLTQ0NWMtOTI2MS1iNDVjYmZkMzgxYzQiLCJhdWQiOiJhdXRoZW50aWNhdGVkIiwiZXhwIjoxNzUyODM0Nzc4LCJpYXQiOjE3NTI4MzExNzgsImVtYWlsIjoiaW1hbTA3bkBnbWFpbC5jb20iLCJwaG9uZSI6IiIsImFwcF9tZXRhZGF0YSI6eyJwcm92aWRlciI6ImVtYWlsIiwicHJvdmlkZXJzIjpbImVtYWlsIl19LCJ1c2VyX21ldGFkYXRhIjp7ImVtYWlsIjoiaW1hbTA3bkBnbWFpbC5jb20iLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwicGhvbmVfdmVyaWZpZWQiOmZhbHNlLCJzdWIiOiJiZjkyYzZhYi1iMzEwLTQ0NWMtOTI2MS1iNDVjYmZkMzgxYzQifSwicm9sZSI6ImF1dGhlbnRpY2F0ZWQiLCJhYWwiOiJhYWwxIiwiYW1yIjpbeyJtZXRob2QiOiJwYXNzd29yZCIsInRpbWVzdGFtcCI6MTc1MjgzMTE3OH1dLCJzZXNzaW9uX2lkIjoiNTA2Y2NiYTgtOGRmZi00YjI1LWExOTQtYWY5MmE4OGY1NTc5IiwiaXNfYW5vbnltb3VzIjpmYWxzZX0.fdALoUtlGSSm_4ycJZzwIZNNiCdZkiAsO2MQ8XDTU9w`,
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                id: '6cf0674c-441f-4487-85be-9420e30f9de6'
+            })
+        }
+        );
+
+        const data = await response.json();
+        setData(data.data[0].slots);
+    }, [])
+
+    useEffect(() => {
+        GetPlace();
+    }, [GetPlace])
 
     return (
         <section className="relative w-full min-h-screen overflow-auto touch-none">
@@ -52,7 +92,7 @@ export default function ParkingDetail({ id }: ParkingDetailProps) {
                 <h1 className='font-bold'>{places.find(item => item.id == id)?.name}</h1>
                 <div className='w-5'></div>
             </div>
-            <TransformWrapper
+            {/* <TransformWrapper
                 minScale={0}
                 centerOnInit={false}
                 limitToBounds={false}
@@ -61,11 +101,11 @@ export default function ParkingDetail({ id }: ParkingDetailProps) {
                 doubleClick={{ disabled: true }}
             >
                 <TransformComponent>
+
                     <h1 className='mb-5 flex items-center gap-1 text-sm'>Entrance <ArrowRight className='w-3 h-3 ' /></h1>
                     <div className="flex flex-col items-center gap-2">
 
                         <div className='flex flex-col items-center gap-10'>
-                            {/* Top Row (reverse to face bottom row) */}
                             <div className="grid grid-cols-4 gap-12">
                                 {parking_plan.slice(0, 4).map((slot, index) => (
                                     <div
@@ -86,7 +126,6 @@ export default function ParkingDetail({ id }: ParkingDetailProps) {
                                 ))}
                             </div>
 
-                            {/* Bottom Row */}
                             <div className="grid grid-cols-4 gap-12">
                                 {parking_plan.slice(4, 8).map((slot, index) => (
                                     <div
@@ -129,8 +168,6 @@ export default function ParkingDetail({ id }: ParkingDetailProps) {
                                 ))}
                             </div>
 
-
-                            {/* Bottom Row */}
                             <div className="grid grid-cols-4 gap-12">
                                 {parking_plan.slice(12, 16).map((slot, index) => (
                                     <div
@@ -173,7 +210,6 @@ export default function ParkingDetail({ id }: ParkingDetailProps) {
                                 ))}
                             </div>
 
-                            {/* Bottom Row */}
                             <div className="grid grid-cols-4 gap-12">
                                 {parking_plan.slice(20, 24).map((slot, index) => (
                                     <div
@@ -196,7 +232,28 @@ export default function ParkingDetail({ id }: ParkingDetailProps) {
                         </div>
                     </div>
                 </TransformComponent>
-            </TransformWrapper>
+            </TransformWrapper> */}
+            <div className='min-h-screen flex items-center justify-center gap-10'>
+                {data && data.map((item, i) => {
+                    return (
+                        <div
+                            key={i}
+                            className="relative w-20 h-32 border-b border-x border-dashed border-gray-500 rounded-b-md bg-white flex items-center justify-center text-sm font-medium rotate-180"
+                        >
+                            {item.available && (
+                                <Image
+                                    src={'/car_icon.png'}
+                                    width={100}
+                                    height={100}
+                                    alt={`A1`}
+                                    className="pointer-events-none "
+                                />
+                            )}
+                            <h1 className="absolute bottom-0 text-xs rotate-180">{item.slot_code}</h1>
+                        </div>
+                    )
+                })}
+            </div>
         </section>
     );
 }

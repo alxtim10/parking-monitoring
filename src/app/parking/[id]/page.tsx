@@ -9,7 +9,7 @@ export default async function page(props: { params: Promise<{ id: string }> }) {
 
   return (
     <section>
-      <ParkingDetail id={Number(id)} />
+      <ParkingDetail />
     </section>
   )
 }

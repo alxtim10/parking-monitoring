@@ -1,56 +1,191 @@
 "use client";
-import React, { useState } from "react";
+import { parking_plan, places } from "@/constants";
+import { ArrowLeft, ArrowRight } from "lucide-react";
+import Image from "next/image";
+import { useRouter } from "next/navigation";
+import React, { useCallback, useEffect, useRef, useState } from "react";
+import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch";
 import * as XLSX from "xlsx";
 
-type Slot = {
-  slot_id: string;
-  row: number;
-  column: number;
-  orientation: "horizontal" | "vertical";
+type Spot = { row: number; col: number; code: string; available: boolean; };
+type ApiSlot = {
+  slot_code: string;
+  available: boolean;
 };
 
-const ParkingLot = () => {
-  const [slots, setSlots] = useState<Slot[]>([]);
+interface ParkingDetailProps {
+  id: number;
+}
 
-  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+export default function ParkingDetail({ id }: ParkingDetailProps) {
+  const router = useRouter();
+  const [data, setData] = useState<any[]>([]);
+  const [token, setToken] = useState<string>();
+  const ws = useRef<WebSocket | null>(null);
 
-    const reader = new FileReader();
-    reader.onload = (evt) => {
-      const data = new Uint8Array(evt.target?.result as ArrayBuffer);
-      const workbook = XLSX.read(data, { type: "array" });
-      const sheetName = workbook.SheetNames[0];
-      const worksheet = workbook.Sheets[sheetName];
-      const jsonData = XLSX.utils.sheet_to_json<Slot>(worksheet);
+  const [spots, setSpots] = useState<Spot[]>([]);
 
-      setSlots(jsonData);
+
+  const GetPlace = useCallback(async (): Promise<ApiSlot[]> => {
+    const response = await fetch(
+      `https://valet-production.up.railway.app/api/place/floor/getbyid`,
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          id: "6cf0674c-441f-4487-85be-9420e30f9de6",
+        }),
+      }
+    );
+
+    const data = await response.json();
+    return data.data[0].slots as ApiSlot[];
+  }, [token]);
+
+  useEffect(() => {
+    const loadExcelAndSlots = async () => {
+      // Load layout from Excel
+      const res = await fetch("/PARKIR.xlsx");
+      const blob = await res.blob();
+      const arrayBuffer = await blob.arrayBuffer();
+      const workbook = XLSX.read(arrayBuffer, { type: "array" });
+      const sheet = workbook.Sheets[workbook.SheetNames[0]];
+      const range = XLSX.utils.decode_range(sheet["!ref"]!);
+
+      let parsedSpots: Spot[] = [];
+
+      for (let R = range.s.r; R <= range.e.r; R++) {
+        for (let C = range.s.c; C <= range.e.c; C++) {
+          const cellRef = XLSX.utils.encode_cell({ r: R, c: C });
+          const cell = sheet[cellRef];
+          if (cell && String(cell.v).trim() !== "") {
+            parsedSpots.push({
+              row: R,
+              col: C,
+              code: String(cell.v).trim(),
+              available: true, // default, will be updated
+            });
+          }
+        }
+      }
+
+      // Fetch slot availability
+      const apiSlots = await GetPlace();
+      const availabilityMap = new Map(apiSlots.map(s => [s.slot_code, s.available]));
+
+      // Merge
+      const merged = parsedSpots.map((spot) => ({
+        ...spot,
+        available: availabilityMap.get(spot.code) ?? false,
+      }));
+
+      setSpots(merged);
     };
-    reader.readAsArrayBuffer(file);
-  };
+
+    loadExcelAndSlots();
+  }, [GetPlace]);
+
+  useEffect(() => {
+    let message = {
+      text: "Waiting for parking slot update..",
+    };
+    ws.current = new WebSocket(
+      "wss://valet-production.up.railway.app?clientId=7cb81015-c630-4094-977d-f0392069ce14"
+    );
+
+    ws.current.onopen = () => {
+      console.log("WebSocket connected");
+      ws.current?.send(JSON.stringify(message));
+    };
+
+    ws.current.onmessage = (event) => {
+      try {
+        const parsed = JSON.parse(event.data);
+        if ((parsed.type = "broadcast_update")) {
+          let ads = JSON.parse(event.data);
+          setSpots((prev) =>
+            prev.map((slot) => {
+              const found = ads.data.find(
+                (update: any) => update.slot_code === slot.code
+              );
+              if (found) {
+                return { ...slot, available: found.available };
+              }
+              return slot;
+            })
+          );
+        }
+      } catch (error) {
+        return;
+      }
+    };
+
+    ws.current.onclose = () => {
+      console.log("WebSocket disconnected");
+    };
+
+    ws.current.onerror = (error) => {
+      console.error("WebSocket error:", error);
+    };
+
+    return () => {
+      ws.current?.close();
+    };
+  }, []);
+
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      let userToken = localStorage.getItem("bokirToken");
+      if (userToken) {
+        setToken(userToken);
+      }
+    }
+  }, []);
+
+  useEffect(() => {
+    if (token) {
+      GetPlace();
+    }
+  }, [token, GetPlace]);
+
+  
 
   return (
-    <div className="p-4">
-      <input type="file" accept=".xlsx, .xls" onChange={handleFileUpload} />
-      <div className="mt-4 grid grid-cols-10 gap-2">
-        {slots.map((slot) => (
-          <div
-            key={slot.slot_id}
-            className={`p-2 border rounded text-center ${slot.orientation === "horizontal"
-                ? "col-span-2 row-span-1"
-                : "col-span-1 row-span-2"
-              }`}
-            style={{
-              gridColumnStart: slot.column,
-              gridRowStart: slot.row,
-            }}
-          >
-            {slot.slot_id}
-          </div>
-        ))}
+    <section className="relative w-full min-h-screen overflow-auto touch-none">
+      <div className="flex items-center justify-between p-5">
+        <ArrowLeft
+          onClick={() => {
+            router.back();
+          }}
+          className="w-5 h-5 cursor-pointer"
+        />
+        <h1 className="font-bold">
+          {places.find((item) => item.id == id)?.name}
+        </h1>
+        <div className="w-5"></div>
       </div>
-    </div>
-  );
-};
 
-export default ParkingLot;
+      <div className="min-h-screen">
+        <div className="mt-6 relative w-fit border p-2 bg-gray-100">
+          {spots.map((spot, index) => (
+            <div
+              key={index}
+              className={`${!spot.available ? 'bg-green-500' : 'bg-red-500'} absolute w-12 h-12 text-white text-xs 
+              flex items-center justify-center border border-gray-400 rounded`}
+              style={{
+                top: `${spot.row * 50}px`,
+                left: `${spot.col * 50}px`,
+              }}
+            >
+              {spot.code}
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}

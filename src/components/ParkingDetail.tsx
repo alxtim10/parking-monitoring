@@ -55,7 +55,6 @@ export default function ParkingDetail({ id }: ParkingDetailProps) {
               col: C,
               code: String(cell.v).trim(),
               available: true,
-              available: true,
             });
           }
         }
@@ -85,9 +84,6 @@ export default function ParkingDetail({ id }: ParkingDetailProps) {
       }));
 
       setSpots(merged);
-
-      maxRow = Math.max(...spots.map((s) => s.row)) + 1;
-      maxCol = Math.max(...spots.map((s) => s.col)) + 1;
     };
 
     loadExcelAndSlots();

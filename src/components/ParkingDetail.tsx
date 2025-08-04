@@ -163,7 +163,7 @@ export default function ParkingDetail({ id }: ParkingDetailProps) {
         <div className="w-5"></div>
       </div>
 
-      <div className="w-full flex items-center justify-center overflow-auto">
+      <div className="w-full flex min-h-screen items-center justify-center overflow-auto">
         <div
           className="relative"
           style={{
@@ -174,7 +174,7 @@ export default function ParkingDetail({ id }: ParkingDetailProps) {
           {spots.map((spot, index) => (
             <div
               key={index}
-              className={`${spot.available ? 'bg-white text-black' : 'bg-red-500'} absolute text-white text-[2vw]
+              className={`${spot.available ? 'bg-white text-black' : 'bg-red-500 text-white'} absolute text-[2vw]
           flex items-center justify-center border border-black rounded shadow`}
               style={{
                 width: `${boxSizeVW}vw`,

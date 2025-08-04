@@ -1,4 +1,5 @@
-import { Calendar, Home, Inbox, Search, Settings } from "lucide-react"
+"use client";
+import { Building, ChartBar, HomeIcon, Square, User2 } from "lucide-react";
 
 import {
   Sidebar,
@@ -6,44 +7,59 @@ import {
   SidebarGroup,
   SidebarGroupContent,
   SidebarGroupLabel,
+  SidebarHeader,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-} from "@/components/ui/sidebar"
+} from "@/components/ui/sidebar";
+import { useRouter } from "next/navigation";
 
 // Menu items.
 const items = [
   {
-    title: "Home",
-    url: "#",
-    icon: Home,
+    title: "Place",
+    url: "place",
+    icon: Building,
   },
   {
-    title: "Inbox",
-    url: "#",
-    icon: Inbox,
+    title: "Floor",
+    url: "/floor",
+    icon: ChartBar,
   },
   {
-    title: "Calendar",
-    url: "#",
-    icon: Calendar,
+    title: "Spot",
+    url: "/spot",
+    icon: Square,
   },
-  {
-    title: "Search",
-    url: "#",
-    icon: Search,
-  },
-  {
-    title: "Settings",
-    url: "#",
-    icon: Settings,
-  },
-]
+];
 
 export function DashboardSidebar() {
+  const router = useRouter();
+
   return (
     <Sidebar>
+      <SidebarHeader>
+        <h1 className="text-3xl font-bold px-3 pt-3">BOKIR</h1>
+      </SidebarHeader>
       <SidebarContent>
+        <SidebarGroup>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild>
+                  <button
+                    onClick={() => {
+                      router.push("/dashboard");
+                    }}
+                  >
+                    <HomeIcon />
+                    <span>Home</span>
+                  </button>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
         <SidebarGroup>
           <SidebarGroupLabel>Application</SidebarGroupLabel>
           <SidebarGroupContent>
@@ -51,17 +67,39 @@ export function DashboardSidebar() {
               {items.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild>
-                    <a href={item.url}>
+                    <button
+                      onClick={() => {
+                        router.push(`/dashboard/${item.url}`);
+                      }}
+                    >
                       <item.icon />
                       <span>{item.title}</span>
-                    </a>
+                    </button>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
+        <SidebarGroup>
+          <SidebarGroupLabel>System</SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild>
+                  <button
+                  onClick={() => {
+                      router.push("/dashboard/user");
+                    }}>
+                    <User2 />
+                    <span>User</span>
+                  </button>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
       </SidebarContent>
     </Sidebar>
-  )
+  );
 }

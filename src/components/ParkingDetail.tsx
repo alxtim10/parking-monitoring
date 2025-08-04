@@ -7,7 +7,7 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch";
 import * as XLSX from "xlsx";
 
-type Spot = { row: number; col: number; code: string; available: boolean; };
+type Spot = { row: number; col: number; code: string; available: boolean };
 type ApiSlot = {
   slot_code: string;
   available: boolean;
@@ -19,7 +19,6 @@ interface ParkingDetailProps {
 
 export default function ParkingDetail({ id }: ParkingDetailProps) {
   const router = useRouter();
-  const [data, setData] = useState<any[]>([]);
   const [token, setToken] = useState<string>();
   const ws = useRef<WebSocket | null>(null);
 
@@ -33,6 +32,8 @@ export default function ParkingDetail({ id }: ParkingDetailProps) {
 
   useEffect(() => {
     const loadExcelAndSlots = async () => {
+      if (!token) return;
+
       if (!token) return;
 
       // Load layout from Excel
@@ -53,6 +54,7 @@ export default function ParkingDetail({ id }: ParkingDetailProps) {
               row: R,
               col: C,
               code: String(cell.v).trim(),
+              available: true,
               available: true,
             });
           }
@@ -83,6 +85,9 @@ export default function ParkingDetail({ id }: ParkingDetailProps) {
       }));
 
       setSpots(merged);
+
+      maxRow = Math.max(...spots.map((s) => s.row)) + 1;
+      maxCol = Math.max(...spots.map((s) => s.col)) + 1;
     };
 
     loadExcelAndSlots();
@@ -137,7 +142,6 @@ export default function ParkingDetail({ id }: ParkingDetailProps) {
     };
   }, []);
 
-
   useEffect(() => {
     if (typeof window !== "undefined") {
       let userToken = localStorage.getItem("bokirToken");
@@ -149,7 +153,7 @@ export default function ParkingDetail({ id }: ParkingDetailProps) {
 
 
   return (
-    <section className="relative w-full min-h-screen overflow-auto touch-none">
+    <section>
       <div className="flex items-center justify-between p-5">
         <ArrowLeft
           onClick={() => {

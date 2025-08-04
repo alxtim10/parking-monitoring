@@ -25,28 +25,16 @@ export default function ParkingDetail({ id }: ParkingDetailProps) {
 
   const [spots, setSpots] = useState<Spot[]>([]);
 
-
-  const GetPlace = useCallback(async (): Promise<ApiSlot[]> => {
-    const response = await fetch(
-      `https://valet-production.up.railway.app/api/place/floor/getbyid`,
-      {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          id: "6cf0674c-441f-4487-85be-9420e30f9de6",
-        }),
-      }
-    );
-
-    const data = await response.json();
-    return data.data[0].slots as ApiSlot[];
-  }, [token]);
+  const boxSizeVW = 9; // box size in vw units
+  const maxRow = Math.max(...spots.map(s => s.row));
+  const maxCol = Math.max(...spots.map(s => s.col));
+  const containerWidthVW = (maxCol + 1) * boxSizeVW;
+  const containerHeightVW = (maxRow + 1) * boxSizeVW;
 
   useEffect(() => {
     const loadExcelAndSlots = async () => {
+      if (!token) return;
+
       // Load layout from Excel
       const res = await fetch("/PARKIR.xlsx");
       const blob = await res.blob();
@@ -56,7 +44,6 @@ export default function ParkingDetail({ id }: ParkingDetailProps) {
       const range = XLSX.utils.decode_range(sheet["!ref"]!);
 
       let parsedSpots: Spot[] = [];
-
       for (let R = range.s.r; R <= range.e.r; R++) {
         for (let C = range.s.c; C <= range.e.c; C++) {
           const cellRef = XLSX.utils.encode_cell({ r: R, c: C });
@@ -66,27 +53,41 @@ export default function ParkingDetail({ id }: ParkingDetailProps) {
               row: R,
               col: C,
               code: String(cell.v).trim(),
-              available: true, // default, will be updated
+              available: true,
             });
           }
         }
       }
 
       // Fetch slot availability
-      const apiSlots = await GetPlace();
+      const response = await fetch(
+        `https://valet-production.up.railway.app/api/place/floor/getbyid`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            id: "6cf0674c-441f-4487-85be-9420e30f9de6",
+          }),
+        }
+      );
+      const data = await response.json();
+      const apiSlots = data.data[0].slots as ApiSlot[];
       const availabilityMap = new Map(apiSlots.map(s => [s.slot_code, s.available]));
 
-      // Merge
       const merged = parsedSpots.map((spot) => ({
         ...spot,
-        available: availabilityMap.get(spot.code) ?? false,
+        available: availabilityMap.get(spot.code) ?? true,
       }));
 
       setSpots(merged);
     };
 
     loadExcelAndSlots();
-  }, [GetPlace]);
+  }, [token]);
+
 
   useEffect(() => {
     let message = {
@@ -146,13 +147,6 @@ export default function ParkingDetail({ id }: ParkingDetailProps) {
     }
   }, []);
 
-  useEffect(() => {
-    if (token) {
-      GetPlace();
-    }
-  }, [token, GetPlace]);
-
-  
 
   return (
     <section className="relative w-full min-h-screen overflow-auto touch-none">
@@ -169,16 +163,24 @@ export default function ParkingDetail({ id }: ParkingDetailProps) {
         <div className="w-5"></div>
       </div>
 
-      <div className="min-h-screen">
-        <div className="mt-6 relative w-fit border p-2 bg-gray-100">
+      <div className="w-full flex items-center justify-center overflow-auto">
+        <div
+          className="relative"
+          style={{
+            width: `${containerWidthVW}vw`,
+            height: `${containerHeightVW}vw`,
+          }}
+        >
           {spots.map((spot, index) => (
             <div
               key={index}
-              className={`${!spot.available ? 'bg-green-500' : 'bg-red-500'} absolute w-12 h-12 text-white text-xs 
-              flex items-center justify-center border border-gray-400 rounded`}
+              className={`${spot.available ? 'bg-white text-black' : 'bg-red-500'} absolute text-white text-[2vw]
+          flex items-center justify-center border border-black rounded shadow`}
               style={{
-                top: `${spot.row * 50}px`,
-                left: `${spot.col * 50}px`,
+                width: `${boxSizeVW}vw`,
+                height: `${boxSizeVW}vw`,
+                top: `${spot.row * boxSizeVW}vw`,
+                left: `${spot.col * boxSizeVW}vw`,
               }}
             >
               {spot.code}
@@ -186,6 +188,8 @@ export default function ParkingDetail({ id }: ParkingDetailProps) {
           ))}
         </div>
       </div>
+
+
     </section>
   );
 }

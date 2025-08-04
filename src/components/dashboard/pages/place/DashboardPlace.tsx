@@ -8,6 +8,9 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { SidebarTrigger } from "@/components/ui/sidebar";
+import { Settings } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 type PlaceType = {
   place_id: string;
@@ -28,7 +31,8 @@ type PlaceType = {
 
 const DashboardPlace = () => {
   const [data, setData] = useState<PlaceType[]>();
-  const [token, setToken] = useState<string>("");
+  const [token, setToken] = useState<string>();
+  const router = useRouter();
 
   useEffect(() => {
     if (token) {
@@ -68,7 +72,10 @@ const DashboardPlace = () => {
   return (
     <section className="px-4 py-2 w-full">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold">Place</h1>
+        <div className="flex items-center gap-2">
+          <SidebarTrigger />
+          <h1 className="text-2xl font-bold">Place</h1>
+        </div>
         <button className="bg-blue-700 text-white px-4 py-2 rounded-sm shadow-sm text-xs  ">
           Add
         </button>
@@ -88,6 +95,7 @@ const DashboardPlace = () => {
                     <TableHead>Type</TableHead>
                     <TableHead>City</TableHead>
                     <TableHead>Address</TableHead>
+                    <TableHead>Action</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -100,6 +108,15 @@ const DashboardPlace = () => {
                         <TableCell>{item.type}</TableCell>
                         <TableCell>{item.city}</TableCell>
                         <TableCell>{item.address}</TableCell>
+                        <TableCell align="center">
+                          <button
+                          onClick={() => {
+                            router.push(`/dashboard/place/${item.place_id}`)
+                          }}
+                          >
+                            <Settings className="w-5 h-5" />
+                          </button>
+                        </TableCell>
                       </TableRow>
                     );
                   })}

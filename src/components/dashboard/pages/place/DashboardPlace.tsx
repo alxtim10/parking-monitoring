@@ -73,7 +73,6 @@ const DashboardPlace = () => {
     <section className="px-4 py-2 w-full">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <SidebarTrigger />
           <h1 className="text-2xl font-bold">Place</h1>
         </div>
         <button className="bg-blue-700 text-white px-4 py-2 rounded-sm shadow-sm text-xs  ">
